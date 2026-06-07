@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI-HRMS — AI-Powered Human Resource Management System
 
-## Getting Started
+> Theme: Build the Future of HR Management with AI-Powered Solutions
 
-First, run the development server:
+## 🚀 Live Demo
+- **Frontend:** Run `cd frontend && pnpm dev` → http://localhost:3000
+- **Backend:** Run `cd backend && pnpm dev` → http://localhost:5000
+- **AI Service:** Run `cd ai-service && uvicorn main:app --port 8000`
+
+## 🔑 Demo Accounts
+| Role | Email | Password |
+|------|-------|----------|
+| Management Admin | admin@hrms.com | password123 |
+| Senior Manager | manager@hrms.com | password123 |
+| HR Recruiter | hr@hrms.com | password123 |
+| Employee | emp@hrms.com | password123 |
+
+## ✅ Features Implemented
+
+### Core HRMS
+- Employee data management (5,000+ employees)
+- Attendance tracking with clock in/out
+- Leave management with approval workflow
+- Payroll generation with Indian tax (PF, ESI, TDS)
+- Performance reviews with OKR tracking
+
+### AI Features
+- **AI Resume Screening** — zero human intervention, Gemini LLM evaluation with strengths/weaknesses
+- **AI Voice Interview** — adaptive questions via Groq, speech recognition, auto scorecard
+- **AI Proctored Interview** — camera monitoring, face detection, tab-lock, fullscreen enforcement
+- **AI Co-pilot** — context-aware HR assistant powered by Gemini
+- **Employee Experience Score (EXS)** — unique AI-computed wellness metric
+- **AI JD Generator** — full job description from 3 inputs
+
+### Multi-Role System
+- Management Admin — full access, company-wide analytics
+- Senior Manager — team view, leave approvals, performance
+- HR Recruiter — recruitment, screening, interviews
+- Employee — self-service, leave, payslips, performance
+
+### Scalability
+- 5,000+ employee records in MongoDB
+- Paginated APIs with <50ms response time
+- Real-time WebSocket connections
+- Live scalability metrics dashboard
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 16, TailwindCSS, Zustand, React Query |
+| Backend | Node.js, Express, MongoDB, Socket.io |
+| AI Service | FastAPI, Gemini 2.0 Flash, Groq Llama 3.3, Groq Whisper |
+| Database | MongoDB with Mongoose |
+| Auth | JWT with role-based access control |
+
+## ⚙️ Setup Instructions
+
+### Prerequisites
+- Node.js 18+, Python 3.9+, MongoDB, pnpm
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 1. Backend
+cd backend
+pnpm install
+cp .env.example .env  # Add your keys
+pnpm exec ts-node -r dotenv/config src/scripts/seed.ts
+pnpm exec ts-node -r dotenv/config src/scripts/seed5000.ts
 pnpm dev
-# or
-bun dev
+
+# 2. Frontend
+cd frontend
+pnpm install
+pnpm dev
+
+# 3. AI Service
+cd ai-service
+python -m venv venv
+venv\Scripts\activate  # Windows
+pip install -r requirements_lite.txt
+uvicorn main_lite:app --port 8000 --reload
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**backend/.env**
+MONGO_URI=mongodb://localhost:27017/ai_hrms
+JWT_SECRET=your_secret
+GEMINI_API_KEY=your_gemini_key
+GROQ_API_KEY=your_groq_key
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**ai-service/.env**
+GEMINI_API_KEY=your_gemini_key
+GROQ_API_KEY=your_groq_key
 
-## Learn More
+## 📁 Project Structure
+ai-hrms/
+├── frontend/          # Next.js UI
+│   ├── app/           # Pages (dashboard, interview, login)
+│   ├── components/    # Reusable UI components
+│   └── lib/           # API client, stores, hooks
+├── backend/           # Node.js API
+│   ├── src/
+│   │   ├── models/    # MongoDB schemas
+│   │   ├── routes/    # API endpoints
+│   │   └── middleware/# Auth, RBAC
+└── ai-service/        # Python FastAPI
+└── main_lite.py   # All AI endpoints
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎯 Unique Differentiators
+1. **Proctored Interview System** — camera CV, tab detection, keyboard blocking
+2. **Shareable Interview Links** — candidates take interviews in locked environment
+3. **Employee Experience Score** — AI-computed engagement health metric
+4. **AI Co-pilot Sidebar** — context-aware insights on every page
+5. **Zero-intervention Resume Screening** — end-to-end AI pipeline
