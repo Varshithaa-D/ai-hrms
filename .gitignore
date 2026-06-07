@@ -1,9 +1,33 @@
+# Dependencies
 node_modules/
-.env
-.env.local
-__pycache__/
-*.pyc
-venv/
 .next/
 dist/
 build/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# MongoDB data
+data/
+
+# Large model files
+*.bin
+*.pt
+*.safetensors
