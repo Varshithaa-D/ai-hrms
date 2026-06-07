@@ -1,3 +1,5 @@
+'use client';
+
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
@@ -12,11 +14,15 @@ export default function PageHeader({ title, subtitle, action }: PageHeaderProps)
         {subtitle && <p style={{ color: 'var(--text-2)', fontSize: 13 }}>{subtitle}</p>}
       </div>
       {action && (
-        <button onClick={action.onClick} style={{
-          background: `linear-gradient(135deg, ${action.color || 'var(--accent)'}, var(--accent2))`,
-          color: 'white', border: 'none', borderRadius: 10, padding: '10px 20px',
-          fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-body)'
-        }}>
+        <button
+          onClick={action.onClick}
+          suppressHydrationWarning
+          style={{
+            background: `linear-gradient(135deg, ${action.color || 'var(--accent)'}, var(--accent2))`,
+            color: 'white', border: 'none', borderRadius: 10, padding: '10px 20px',
+            fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-body)'
+          }}
+        >
           {action.label}
         </button>
       )}

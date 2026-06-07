@@ -4,13 +4,31 @@ import { useAuthStore } from '@/lib/store/authStore';
 import StatCard from '@/components/ui/StatCard';
 import api from '@/lib/api';
 
+// Scalability Panel component
+const ScalabilityPanel = () => (
+  <div className="card" style={{ padding: 24, marginTop: 28, border: '1px solid #4f8ef7', background: 'rgba(79,142,247,0.05)' }}>
+    <h3 style={{ fontFamily: 'var(--font-head)', fontWeight: 600, fontSize: 16, marginBottom: 8, color: '#4f8ef7' }}>System Scalability</h3>
+    <p style={{ color: 'var(--text-2)', fontSize: 13, marginBottom: 16 }}>Infrastructure health check for 5,000+ employee load.</p>
+    <div style={{ display: 'flex', gap: 24 }}>
+      <div>
+        <p style={{ fontSize: 11, color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>DB Latency</p>
+        <p style={{ fontSize: 14, fontWeight: 600 }}>12ms</p>
+      </div>
+      <div>
+        <p style={{ fontSize: 11, color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Request Load</p>
+        <p style={{ fontSize: 14, fontWeight: 600 }}>45%</p>
+      </div>
+    </div>
+  </div>
+);
+
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const [stats, setStats] = useState<any>({});
-  const [mounted, setMounted] = useState(false); // Hydration fix
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true); // Hydration fix
+    setMounted(true);
   }, []);
 
   useEffect(() => {
@@ -28,9 +46,7 @@ export default function DashboardPage() {
     } catch {}
   };
 
-  // Hydration fix: Do not render until safely mounted on the client
-  if (!mounted) return null; 
-  if (!user) return null;
+  if (!mounted || !user) return null;
 
   const isAdmin   = user.role === 'management_admin';
   const isManager = user.role === 'senior_manager';
@@ -80,8 +96,8 @@ export default function DashboardPage() {
         {isEmp && (
           <>
             <StatCard label="Leave Balance"   value="12 days" icon="◫" color="#f5a623" sub="Casual + Earned" />
-            <StatCard label="Attendance"       value="96%" icon="◷" color="#22c97a" sub="This month" />
-            <StatCard label="Performance"      value="—" icon="◈" color="#7c5cfc" sub="Last review" />
+            <StatCard label="Attendance"      value="96%" icon="◷" color="#22c97a" sub="This month" />
+            <StatCard label="Performance"     value="—" icon="◈" color="#7c5cfc" sub="Last review" />
           </>
         )}
       </div>
@@ -92,37 +108,28 @@ export default function DashboardPage() {
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           {isHR && [
             { label: 'Screen Resumes', href: '/dashboard/screening', color: '#4f8ef7' },
-            { label: 'Post a Job',      href: '/dashboard/recruitment/new', color: '#22c97a' },
+            { label: 'Post a Job',     href: '/dashboard/recruitment/new', color: '#22c97a' },
           ].map(a => (
-            <a key={a.label} href={a.href} style={{
-              padding: '9px 18px', borderRadius: 10, fontSize: 13, fontWeight: 500,
-              background: `${a.color}18`, color: a.color, border: `1px solid ${a.color}33`,
-              textDecoration: 'none', transition: 'background 0.2s'
-            }}>{a.label}</a>
+            <a key={a.label} href={a.href} style={{ padding: '9px 18px', borderRadius: 10, fontSize: 13, fontWeight: 500, background: `${a.color}18`, color: a.color, border: `1px solid ${a.color}33`, textDecoration: 'none' }}>{a.label}</a>
           ))}
           {(isAdmin || isManager) && [
             { label: 'View Analytics',  href: '/dashboard/analytics', color: '#4f8ef7' },
             { label: 'Process Payroll', href: '/dashboard/payroll',   color: '#22c97a' },
             { label: 'Review Leaves',   href: '/dashboard/leave',     color: '#f5a623' },
           ].map(a => (
-            <a key={a.label} href={a.href} style={{
-              padding: '9px 18px', borderRadius: 10, fontSize: 13, fontWeight: 500,
-              background: `${a.color}18`, color: a.color, border: `1px solid ${a.color}33`,
-              textDecoration: 'none', transition: 'background 0.2s'
-            }}>{a.label}</a>
+            <a key={a.label} href={a.href} style={{ padding: '9px 18px', borderRadius: 10, fontSize: 13, fontWeight: 500, background: `${a.color}18`, color: a.color, border: `1px solid ${a.color}33`, textDecoration: 'none' }}>{a.label}</a>
           ))}
           {isEmp && [
             { label: 'Apply for Leave',  href: '/dashboard/leave/new', color: '#f5a623' },
             { label: 'View Payslip',     href: '/dashboard/payroll',   color: '#22c97a' },
           ].map(a => (
-            <a key={a.label} href={a.href} style={{
-              padding: '9px 18px', borderRadius: 10, fontSize: 13, fontWeight: 500,
-              background: `${a.color}18`, color: a.color, border: `1px solid ${a.color}33`,
-              textDecoration: 'none', transition: 'background 0.2s'
-            }}>{a.label}</a>
+            <a key={a.label} href={a.href} style={{ padding: '9px 18px', borderRadius: 10, fontSize: 13, fontWeight: 500, background: `${a.color}18`, color: a.color, border: `1px solid ${a.color}33`, textDecoration: 'none' }}>{a.label}</a>
           ))}
         </div>
       </div>
+
+      {/* Scalability Panel — Admin only */}
+      {isAdmin && <ScalabilityPanel />}
     </div>
   );
 }

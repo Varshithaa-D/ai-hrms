@@ -11,6 +11,7 @@ import { useAuthStore } from '@/lib/store/authStore';
 
 export default function PayrollPage() {
   const { user } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
   const [employees, setEmployees] = useState<any[]>([]);
   const [payslips, setPayslips] = useState<any[]>([]);
   const [selectedEmp, setSelectedEmp] = useState('');
@@ -19,26 +20,28 @@ export default function PayrollPage() {
   const [genForm, setGenForm] = useState({ employeeId: '', month: 1, year: 2026, daysWorked: 26 });
   const [genLoading, setGenLoading] = useState(false);
 
-  const isEmployee = user?.role === 'employee';
-  const isAdmin = user?.role === 'management_admin' || user?.role === 'hr_recruiter';
-
-  // FIX: Initialize date-dependent states on mount to avoid hydration mismatch
   useEffect(() => {
+    setMounted(true);
     const now = new Date();
     setGenForm(p => ({ ...p, month: now.getMonth() + 1, year: now.getFullYear() }));
   }, []);
 
+  const isEmployee = mounted && user?.role === 'employee';
+  const isAdmin = mounted && (user?.role === 'management_admin' || user?.role === 'hr_recruiter');
+
   useEffect(() => {
+    if (!mounted) return;
     if (isEmployee) {
       fetchMyPayslips();
     } else {
       api.get('/employees?limit=100').then(({ data }) => setEmployees(data.employees)).catch(() => {});
     }
-  }, [isEmployee]);
+  }, [isEmployee, mounted]);
 
   useEffect(() => {
+    if (!mounted) return;
     if (!isEmployee && selectedEmp) fetchPayslips(selectedEmp);
-  }, [selectedEmp, isEmployee]);
+  }, [selectedEmp, isEmployee, mounted]);
 
   const fetchMyPayslips = async () => {
     setLoading(true);
@@ -71,6 +74,8 @@ export default function PayrollPage() {
       alert(err.response?.data?.message || 'Error');
     } finally { setGenLoading(false); }
   };
+
+  if (!mounted) return null;
 
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -105,7 +110,7 @@ export default function PayrollPage() {
   return (
     <div>
       <PageHeader
-        title={isEmployee ? 'My Payslips' : 'Payroll'}
+        title="Payroll"
         subtitle={isEmployee ? 'Your salary history and payslip details' : 'Manage payslips and salary processing'}
         action={isAdmin ? { label: '+ Generate Payroll', onClick: () => setGenModal(true) } : undefined}
       />
@@ -142,18 +147,24 @@ export default function PayrollPage() {
                 {employees.map(emp => <option key={emp._id} value={emp._id}>{emp.firstName} {emp.lastName}</option>)}
               </select>
             </div>
+            
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
                 <label style={{ display: 'block', fontSize: 12, color: 'var(--text-2)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Month</label>
                 <select className="input-field" value={genForm.month} onChange={e => setGenForm(p => ({ ...p, month: Number(e.target.value) }))}>
-                  {months.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+                  {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i) => (
+                    <option key={i+1} value={i+1}>{m}</option>
+                  ))}
                 </select>
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: 12, color: 'var(--text-2)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Year</label>
-                <input className="input-field" type="number" value={genForm.year} onChange={e => setGenForm(p => ({ ...p, year: Number(e.target.value) }))} />
+                <select className="input-field" value={genForm.year} onChange={e => setGenForm(p => ({ ...p, year: Number(e.target.value) }))}>
+                  {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
               </div>
             </div>
+
             <div>
               <label style={{ display: 'block', fontSize: 12, color: 'var(--text-2)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Days Worked</label>
               <input className="input-field" type="number" min={1} max={31} value={genForm.daysWorked} onChange={e => setGenForm(p => ({ ...p, daysWorked: Number(e.target.value) }))} />

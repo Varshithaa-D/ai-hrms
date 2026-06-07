@@ -59,65 +59,44 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router   = useRouter();
   const { logout } = useAuthStore();
-
-  // Fix hydration: read from localStorage only on client
   const [user, setUser] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const stored = localStorage.getItem('hrms_user');
-    if (stored) {
-      try { setUser(JSON.parse(stored)); } catch {}
-    }
-    // Subscribe to auth store changes
-    const unsubscribe = useAuthStore.subscribe((state) => {
-      setUser(state.user);
-    });
+    if (stored) { try { setUser(JSON.parse(stored)); } catch {} }
+    const unsubscribe = useAuthStore.subscribe((state) => setUser(state.user));
     return unsubscribe;
   }, []);
 
-  // Don't render until mounted (prevents hydration mismatch)
-  if (!mounted || !user) return (
-    <aside style={{
-      width: 220, minHeight: '100vh',
-      background: 'var(--bg-card)',
-      borderRight: '1px solid var(--border)',
-    }} />
-  );
+  if (!mounted || !user) return <aside style={{ width: 220, minHeight: '100vh', background: 'var(--bg-card)', borderRight: '1px solid var(--border)' }} />;
 
   const nav   = navByRole[user.role] || [];
   const color = roleColors[user.role] || '#4f8ef7';
 
   return (
-    <aside style={{
-      width: 220, minHeight: '100vh',
-      background: 'var(--bg-card)',
-      borderRight: '1px solid var(--border)',
-      display: 'flex', flexDirection: 'column',
-      position: 'fixed', top: 0, left: 0, zIndex: 50,
-    }}>
-      {/* Logo */}
-      <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid var(--border)' }}>
+    <aside style={{ width: 220, minHeight: '100vh', background: 'var(--bg-card)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, left: 0, zIndex: 50 }}>
+      {/* FWC Logo */}
+      <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 34, height: 34, borderRadius: 10,
-            background: `linear-gradient(135deg, ${color}, ${color}88)`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 16, boxShadow: `0 4px 16px ${color}33`
-          }}>⬡</div>
-          <span style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 15 }}>NEXUS</span>
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: `linear-gradient(135deg, var(--accent), var(--accent2))`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 16px rgba(79,142,247,0.3)` }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+              <circle cx="9" cy="7" r="4" stroke="white" strokeWidth="2.5"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <p style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14 }}>FWC Inc.</p>
+            <p style={{ fontSize: 10, color: 'var(--text-2)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>HRMS Platform</p>
+          </div>
         </div>
       </div>
 
       {/* User */}
       <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: '50%', marginBottom: 8,
-          background: `${color}22`, border: `1.5px solid ${color}55`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14, color
-        }}>
+        <div style={{ width: 36, height: 36, borderRadius: '50%', marginBottom: 8, background: `${color}22`, border: `1.5px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14, color }}>
           {user.name?.charAt(0)?.toUpperCase() || '?'}
         </div>
         <p style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-1)', marginBottom: 2 }}>{user.name}</p>
@@ -127,20 +106,10 @@ export default function Sidebar() {
       {/* Nav */}
       <nav style={{ flex: 1, padding: '12px 10px', overflowY: 'auto' }}>
         {nav.map(item => {
-          const active = pathname === item.href ||
-            (item.href !== '/dashboard' && pathname.startsWith(item.href));
+          const active = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
           return (
-            <div key={item.href}
-              onClick={() => router.push(item.href)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                padding: '9px 12px', borderRadius: 10, marginBottom: 2,
-                cursor: 'pointer', transition: 'all 0.15s',
-                background: active ? `${color}18` : 'transparent',
-                color: active ? color : 'var(--text-2)',
-                fontWeight: active ? 500 : 400, fontSize: 13,
-                borderLeft: active ? `2px solid ${color}` : '2px solid transparent',
-              }}
+            <div key={item.href} onClick={() => router.push(item.href)}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 10, marginBottom: 2, cursor: 'pointer', transition: 'all 0.15s', background: active ? `${color}18` : 'transparent', color: active ? color : 'var(--text-2)', fontWeight: active ? 500 : 400, fontSize: 13, borderLeft: active ? `2px solid ${color}` : '2px solid transparent' }}
               onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; }}
               onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
@@ -151,18 +120,19 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Logout */}
+      {/* Sign Out */}
       <div style={{ padding: '12px 10px', borderTop: '1px solid var(--border)' }}>
         <div onClick={() => { logout(); router.push('/login'); }}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            padding: '9px 12px', borderRadius: 10, cursor: 'pointer',
-            color: 'var(--text-2)', fontSize: 13, transition: 'all 0.15s'
-          }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#f7525a'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-2)'; }}
+          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 10, cursor: 'pointer', color: 'var(--text-2)', fontSize: 13, transition: 'all 0.15s' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#f7525a'; (e.currentTarget as HTMLElement).style.background = 'rgba(247,82,90,0.08)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-2)'; (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
         >
-          <span style={{ fontSize: 14 }}>⊗</span> Sign Out
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign Out
         </div>
       </div>
     </aside>

@@ -59,7 +59,9 @@ export default function LeavePage() {
       <PageHeader
         title="Leave Management"
         subtitle={isEmployee ? 'Your leave requests and history' : 'Track and manage all leave requests'}
-        action={{ label: '+ Apply Leave', onClick: () => router.push('/dashboard/leave/new') }}
+        action={user?.role === 'employee' || user?.role === 'management_admin'
+  ? { label: '+ Apply Leave', onClick: () => router.push('/dashboard/leave/new') }
+  : undefined}
       />
 
       {/* Filter */}
