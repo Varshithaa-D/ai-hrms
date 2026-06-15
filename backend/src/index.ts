@@ -34,6 +34,12 @@ app.use(cors({ origin: '*', credentials: true }));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 
+// ── Root Health Check ─────────────────────────────────────
+app.get('/', (_, res) => res.json({ 
+  status: 'FWC HRMS Backend API is running', 
+  health: '/api/health' 
+}));
+
 // ── Routes ────────────────────────────────────────────────
 app.use('/api/auth',        authRoutes);
 app.use('/api/employees',   employeeRoutes);
