@@ -1,4 +1,5 @@
 'use client';
+import { AI_URL } from '@/lib/utils/constants';
 import { useState, useRef, useEffect } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import { useAuthStore } from '@/lib/store/authStore';
@@ -36,7 +37,7 @@ export default function CopilotPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/ai/copilot', {
+      const res = await fetch(`${AI_URL}/ai/copilot`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

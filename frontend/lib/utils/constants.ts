@@ -1,3 +1,5 @@
+export const AI_URL = process.env.NEXT_PUBLIC_AI_URL || 'http://localhost:8000';
+
 export const DEPARTMENTS = ['Engineering','Product','Design','Marketing','HR','Finance','Operations','Sales'];
 
 export const LEAVE_TYPES  = ['casual','sick','earned','maternity','paternity','unpaid'];

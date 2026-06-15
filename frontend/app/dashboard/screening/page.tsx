@@ -1,4 +1,5 @@
 'use client';
+import { AI_URL } from '@/lib/utils/constants';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
@@ -33,7 +34,7 @@ export default function ResumeScreeningPage() {
     fd.append('candidate_id', file.name);
 
     try {
-      const res = await fetch('http://localhost:8000/ai/screen-resume', {
+      const res = await fetch(`${AI_URL}/ai/screen-resume`, {
         method: 'POST',
         // Do NOT set Content-Type header — browser sets it with boundary for multipart
         body: fd,

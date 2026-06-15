@@ -1,4 +1,5 @@
 'use client';
+import { AI_URL } from '@/lib/utils/constants';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
@@ -20,7 +21,7 @@ export default function EmployeeDetailPage() {
 
   const fetchEXS = async (employee: any) => {
     try {
-      const res = await fetch('http://localhost:8000/ai/exs', {
+      const res = await fetch(`${AI_URL}/ai/exs`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           employee_name: `${employee.firstName} ${employee.lastName}`,
