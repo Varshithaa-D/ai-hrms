@@ -46,12 +46,14 @@ export default function DashboardPage() {
     } catch {}
   };
 
+  // Guard clause properly placed AFTER hooks but BEFORE variable assignments
   if (!mounted || !user) return null;
 
-  const isAdmin   = user.role === 'management_admin';
-  const isManager = user.role === 'senior_manager';
-  const isHR      = user.role === 'hr_recruiter';
-  const isEmp     = user.role === 'employee';
+  // Added optional chaining here just in case the user object is malformed
+  const isAdmin   = user?.role === 'management_admin';
+  const isManager = user?.role === 'senior_manager';
+  const isHR      = user?.role === 'hr_recruiter';
+  const isEmp     = user?.role === 'employee';
 
   return (
     <div>
@@ -69,7 +71,8 @@ export default function DashboardPage() {
         <h1 style={{ fontFamily: 'var(--font-head)', fontSize: 28, fontWeight: 700 }}>
           Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'},{' '}
           <span style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent2))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            {user.name.split(' ')[0]}
+            {/* The crucial fix: Added optional chaining and a fallback string */}
+            {(user?.firstName || user?.name)?.split(' ')[0] || 'there'}
           </span>
         </h1>
         <p style={{ color: 'var(--text-2)', marginTop: 4 }}>Here's what's happening across your workspace today.</p>

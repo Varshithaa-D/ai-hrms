@@ -5,6 +5,17 @@ import api from '@/lib/api';
 import PageHeader from '@/components/ui/PageHeader';
 import { DEPARTMENTS } from '@/lib/utils/constants';
 
+// ✅ THE FIX: The Field component is now extracted OUTSIDE the main page function.
+// React will no longer destroy and recreate this on every keystroke.
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div>
+    <label style={{ display: 'block', fontSize: 12, color: 'var(--text-2)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      {label}
+    </label>
+    {children}
+  </div>
+);
+
 export default function NewEmployeePage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -41,15 +52,6 @@ export default function NewEmployeePage() {
     } finally { setLoading(false); }
   };
 
-  const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div>
-      <label style={{ display: 'block', fontSize: 12, color: 'var(--text-2)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-
   if (!mounted) return null; // Wait until client-side mount
 
   return (
@@ -67,11 +69,11 @@ export default function NewEmployeePage() {
         <div className="card" style={{ padding: 24, marginBottom: 16 }}>
           <p style={{ fontFamily: 'var(--font-head)', fontWeight: 600, marginBottom: 18, color: 'var(--accent)' }}>Personal Information</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <Field label="First Name"><input className="input-field" value={form.firstName} onInput={e => set('firstName', (e.target as HTMLInputElement).value)} required /></Field>
-            <Field label="Last Name"><input className="input-field" value={form.lastName} onInput={e => set('lastName', (e.target as HTMLInputElement).value)} required /></Field>
-            <Field label="Email"><input className="input-field" type="email" value={form.email} onInput={e => set('email', (e.target as HTMLInputElement).value)} required /></Field>
-            <Field label="Phone"><input className="input-field" value={form.phone} onInput={e => set('phone', (e.target as HTMLInputElement).value)} /></Field>
-            <Field label="Address" ><input className="input-field" value={form.address} onInput={e => set('address', (e.target as HTMLInputElement).value)} /></Field>
+            <Field label="First Name"><input className="input-field" value={form.firstName} onChange={e => set('firstName', e.target.value)} required /></Field>
+            <Field label="Last Name"><input className="input-field" value={form.lastName} onChange={e => set('lastName', e.target.value)} required /></Field>
+            <Field label="Email"><input className="input-field" type="email" value={form.email} onChange={e => set('email', e.target.value)} required /></Field>
+            <Field label="Phone"><input className="input-field" value={form.phone} onChange={e => set('phone', e.target.value)} /></Field>
+            <Field label="Address" ><input className="input-field" value={form.address} onChange={e => set('address', e.target.value)} /></Field>
           </div>
         </div>
 
@@ -85,7 +87,7 @@ export default function NewEmployeePage() {
                 {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </Field>
-            <Field label="Designation"><input className="input-field" value={form.designation} onInput={e => set('designation', (e.target as HTMLInputElement).value)} required /></Field>
+            <Field label="Designation"><input className="input-field" value={form.designation} onChange={e => set('designation', e.target.value)} required /></Field>
             <Field label="Employment Type">
               <select className="input-field" value={form.employmentType} onChange={e => set('employmentType', e.target.value)}>
                 <option value="full_time">Full Time</option>
@@ -94,7 +96,7 @@ export default function NewEmployeePage() {
                 <option value="intern">Intern</option>
               </select>
             </Field>
-            <Field label="Joining Date"><input className="input-field" type="date" value={form.joiningDate} onInput={e => set('joiningDate', (e.target as HTMLInputElement).value)} required /></Field>
+            <Field label="Joining Date"><input className="input-field" type="date" value={form.joiningDate} onChange={e => set('joiningDate', e.target.value)} required /></Field>
           </div>
         </div>
 
@@ -102,10 +104,10 @@ export default function NewEmployeePage() {
         <div className="card" style={{ padding: 24, marginBottom: 24 }}>
           <p style={{ fontFamily: 'var(--font-head)', fontWeight: 600, marginBottom: 18, color: '#22c97a' }}>Salary Details (₹/month)</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <Field label="Basic"><input className="input-field" type="number" value={form.salary.basic} onInput={e => setSalary('basic', (e.target as HTMLInputElement).value)} placeholder="50000" /></Field>
-            <Field label="HRA"><input className="input-field" type="number" value={form.salary.hra} onInput={e => setSalary('hra', (e.target as HTMLInputElement).value)} placeholder="20000" /></Field>
-            <Field label="Allowances"><input className="input-field" type="number" value={form.salary.allowances} onInput={e => setSalary('allowances', (e.target as HTMLInputElement).value)} placeholder="10000" /></Field>
-            <Field label="Deductions"><input className="input-field" type="number" value={form.salary.deductions} onInput={e => setSalary('deductions', (e.target as HTMLInputElement).value)} placeholder="3000" /></Field>
+            <Field label="Basic"><input className="input-field" type="number" value={form.salary.basic} onChange={e => setSalary('basic', e.target.value)} placeholder="50000" /></Field>
+            <Field label="HRA"><input className="input-field" type="number" value={form.salary.hra} onChange={e => setSalary('hra', e.target.value)} placeholder="20000" /></Field>
+            <Field label="Allowances"><input className="input-field" type="number" value={form.salary.allowances} onChange={e => setSalary('allowances', e.target.value)} placeholder="10000" /></Field>
+            <Field label="Deductions"><input className="input-field" type="number" value={form.salary.deductions} onChange={e => setSalary('deductions', e.target.value)} placeholder="3000" /></Field>
           </div>
           {form.salary.basic && (
             <div style={{ marginTop: 14, padding: '12px 16px', background: 'rgba(34,201,122,0.08)', borderRadius: 10, border: '1px solid rgba(34,201,122,0.2)' }}>

@@ -1,5 +1,4 @@
 'use client';
-import { AI_URL } from '@/lib/utils/constants';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
@@ -29,12 +28,13 @@ export default function ResumeScreeningPage() {
 
     const fd = new FormData();
     fd.append('file', file);
-    // ← KEY FIX: send jdText correctly as form field (not JSON body)
+    // send jdText correctly as form field (not JSON body)
     fd.append('job_description', jdText.trim());
     fd.append('candidate_id', file.name);
 
     try {
-      const res = await fetch(`${AI_URL}/ai/screen-resume`, {
+      // ✅ FIX: Hit the local backend API proxy instead of AI directly
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/ai/screen-resume`, {
         method: 'POST',
         // Do NOT set Content-Type header — browser sets it with boundary for multipart
         body: fd,

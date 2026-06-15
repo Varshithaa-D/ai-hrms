@@ -463,6 +463,7 @@ export default function LoginPage() {
                 value={form.email}
                 onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
                 required
+                suppressHydrationWarning
               />
             </div>
             <div>
@@ -474,9 +475,10 @@ export default function LoginPage() {
                 value={form.password}
                 onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
                 required
+                suppressHydrationWarning
               />
             </div>
-            <button className="sign-in-btn" type="submit" disabled={loading}>
+            <button className="sign-in-btn" type="submit" disabled={loading} suppressHydrationWarning>
               {loading ? '◌  Signing in...' : 'Sign In  →'}
             </button>
           </form>

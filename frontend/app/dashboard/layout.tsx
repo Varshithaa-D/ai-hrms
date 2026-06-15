@@ -6,16 +6,18 @@ import Sidebar from '@/components/layout/Sidebar';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
-  const [mounted, setMounted] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    if (!isAuthenticated()) router.push('/login');
-  }, [isAuthenticated, router]);
+    const token = localStorage.getItem('hrms_token');
+    if (!token) {
+      router.replace('/login');
+    } else {
+      setChecked(true);
+    }
+  }, []);
 
-  // Wait until mounted to prevent hydration errors
-  if (!mounted) return null;
+  if (!checked) return null;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
