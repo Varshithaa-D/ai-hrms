@@ -3,8 +3,19 @@ import { Router, Request, Response } from 'express';
 const router = Router();
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
 
-// ── UNIVERSAL JSON PROXY ──
-// This single block catches EXS, Copilot, Interview, and any future AI features automatically!
+// ── 1. Explicit Health Check ──
+router.get('/health', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const response = await fetch(`${AI_SERVICE_URL}/health`);
+    const data = await response.json();
+    res.json(data);
+  } catch {
+    res.status(503).json({ status: 'AI Service offline' });
+  }
+});
+
+// ── 2. UNIVERSAL JSON PROXY ──
+// This automatically handles EXS, Copilot, Interview, Scorecard, JD Generator, etc!
 router.all('*', async (req: Request, res: Response): Promise<void> => {
   console.log(`=== 🤖 AI ROUTE HIT: ${req.path} ===`);
   try {
