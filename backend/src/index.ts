@@ -1,6 +1,8 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 import * as http from 'http';
+import * as https from 'https'; // ✅ Added https
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -34,6 +36,7 @@ app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(cors({ origin: '*', credentials: true }));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
+
 // ── MAGIC TYPO CATCHER: Fixes frontend /ai/ai/ mistakes instantly ──
 app.use((req, res, next) => {
   if (req.url.includes('/ai/ai/')) {
@@ -48,7 +51,7 @@ app.get('/', (_, res) => res.json({
   health: '/api/health' 
 }));
 
-// ── Routes ────────────────────────────────────────────────
+// ── Standard Routes ────────────────────────────────────────────────
 app.use('/api/auth',        authRoutes);
 app.use('/api/employees',   employeeRoutes);
 app.use('/api/attendance',  attendanceRoutes);
@@ -57,7 +60,40 @@ app.use('/api/payroll',     payrollRoutes);
 app.use('/api/performance', performanceRoutes);
 app.use('/api/jobs',        jobRoutes);
 
-// ✅ ROUTE REGISTERED HERE - Cleaned up to explicitly use /api/ai
+// ── 1. DIRECT FILE PROXY FOR AI SCREENING ────────────────────────────
+// ✅ Moved ABOVE the JSON proxy and added HTTPS support for Render
+app.post('/api/ai/screen-resume', (req, res) => {
+  console.log('=== 🤖 AI SCREEN RESUME PROXY HIT ===');
+  
+  const aiUrl = new URL(process.env.AI_SERVICE_URL || 'http://localhost:8000');
+
+  // Dynamically choose http or https based on your Render URL
+  const requestModule = aiUrl.protocol === 'https:' ? https : http;
+
+  const proxyReq = requestModule.request({
+    hostname: aiUrl.hostname,
+    port: aiUrl.port || (aiUrl.protocol === 'https:' ? 443 : 80),
+    path: '/ai/screen-resume',
+    method: 'POST',
+    headers: {
+      ...req.headers,
+      host: aiUrl.host // Critical for Render routing!
+    }
+  }, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode || 500, proxyRes.headers);
+    proxyRes.pipe(res);
+  });
+
+  proxyReq.on('error', (err) => {
+    console.error('File Proxy Error:', err);
+    res.status(500).json({ message: 'AI Service is offline or crashed' });
+  });
+
+  req.pipe(proxyReq);
+});
+
+// ── 2. UNIVERSAL JSON PROXY ───────────────────────────────────────────
+// ✅ Moved BELOW the file proxy so it only catches standard JSON requests
 app.use('/api/ai', aiRoutes);
 
 // ── Debug: print all registered routes ───────────────────
@@ -78,34 +114,6 @@ app.get('/api/health', (_, res) => res.json({
   timestamp: new Date(),
   routes: ['auth','employees','attendance','leave','payroll','performance','jobs', 'ai']
 }));
-
-// ── DIRECT FILE PROXY FOR AI SCREENING ────────────────────
-// ✅ Fixed to only listen on ONE clean path
-app.post('/api/ai/screen-resume', (req, res) => {
-  console.log('=== 🤖 AI SCREEN RESUME PROXY HIT ===');
-  
-  const aiUrl = new URL(process.env.AI_SERVICE_URL || 'http://localhost:8000');
-
-  // We use native http to forward the exact multipart/form-data stream
-  const proxyReq = http.request({
-    hostname: aiUrl.hostname,
-    port: aiUrl.port,
-    path: '/ai/screen-resume',
-    method: 'POST',
-    headers: req.headers // Crucial: passes the file boundary correctly!
-  }, (proxyRes) => {
-    res.writeHead(proxyRes.statusCode || 500, proxyRes.headers);
-    proxyRes.pipe(res);
-  });
-
-  proxyReq.on('error', (err) => {
-    console.error('File Proxy Error:', err);
-    res.status(500).json({ message: 'AI Service is offline or crashed' });
-  });
-
-  // Pipe the uploaded file directly to Python as it arrives
-  req.pipe(proxyReq);
-});
 
 // ── 404 catch-all ─────────────────────────────────────────
 app.use((req, res) => {
