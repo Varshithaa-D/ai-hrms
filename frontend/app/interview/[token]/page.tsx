@@ -1,5 +1,5 @@
 'use client';
-import { AI_URL } from '@/lib/utils/constants';
+
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 
@@ -152,7 +152,7 @@ export default function CandidateInterviewPage() {
     await startCamera();
     setLoading(true);
     try {
-      const res = await fetch(`${AI_URL}/ai/interview/next-question`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/ai/interview/next-question`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           job_title: jobInfo.title, 
@@ -179,7 +179,7 @@ export default function CandidateInterviewPage() {
     if (isComplete) { generateScorecard(newHistory); return; }
     setLoading(true);
     try {
-      const res = await fetch(`${AI_URL}/ai/interview/next-question`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/ai/interview/next-question`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           job_title: jobInfo.title, 
@@ -200,7 +200,7 @@ export default function CandidateInterviewPage() {
   const generateScorecard = async (history: Message[]) => {
     setLoading(true);
     try {
-      const res = await fetch(`${AI_URL}/ai/interview/scorecard`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/ai/interview/scorecard`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ job_title: jobInfo.title, conversation_history: history })
       });

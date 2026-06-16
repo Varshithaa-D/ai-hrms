@@ -1,5 +1,5 @@
 'use client';
-import { AI_URL } from '@/lib/utils/constants';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
@@ -18,7 +18,7 @@ export default function NewJobPage() {
     if (!genForm.job_title || !genForm.department) { alert('Fill in title and department'); return; }
     setLoading(true);
     try {
-      const res = await fetch(`${AI_URL}/ai/generate-jd`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/ai/generate-jd`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ job_title: genForm.job_title, department: genForm.department, seniority: genForm.seniority, skills: genForm.skills })

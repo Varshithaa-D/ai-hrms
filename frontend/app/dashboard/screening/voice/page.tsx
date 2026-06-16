@@ -1,5 +1,5 @@
 'use client';
-import { AI_URL } from '@/lib/utils/constants';
+
 import { useState, useRef, useEffect } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -142,7 +142,7 @@ export default function VoiceInterviewPage() {
 
   // ── Fetch next AI question ───────────────────────────────────────────────
   const getNextQuestion = async (history: Message[], isFirst = false) => {
-    const res = await fetch(`${AI_URL}/ai/interview/next-question`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/ai/interview/next-question`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -251,7 +251,7 @@ export default function VoiceInterviewPage() {
         const fd = new FormData();
         fd.append('file', blob, 'audio.webm');
         try {
-          const res = await fetch(`${AI_URL}/ai/transcribe`, { method: 'POST', body: fd });
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/ai/transcribe`, { method: 'POST', body: fd });
           const data = await res.json();
           if (data.transcript) setTranscript(data.transcript);
         } catch {
@@ -307,7 +307,7 @@ export default function VoiceInterviewPage() {
   const fetchScorecard = async (history: Message[]) => {
     setScorecardLoading(true);
     try {
-      const res = await fetch(`${AI_URL}/ai/interview/scorecard`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/ai/interview/scorecard`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

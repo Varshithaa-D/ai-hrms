@@ -1,5 +1,4 @@
 'use client';
-import { AI_URL } from '@/lib/utils/constants';
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import PageHeader from '@/components/ui/PageHeader';
@@ -23,7 +22,7 @@ export default function AnalyticsPage() {
     if (!emp) return;
     setExsLoading(true);
     try {
-      const res = await fetch(`${AI_URL}/ai/exs`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/ai/exs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ employee_name: `${emp.firstName} ${emp.lastName}`, ...exsForm })
